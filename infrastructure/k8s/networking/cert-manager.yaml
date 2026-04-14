@@ -1,0 +1,33 @@
+﻿apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: letsencrypt-prod
+spec:
+  acme:
+    server: https://acme-v02.api.letsencrypt.org/directory
+    email: admin@msp-platform.example.com
+    privateKeySecretRef:
+      name: letsencrypt-prod-account-key
+    solvers:
+      - http01:
+          ingress:
+            class: kourier
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: msp-platform-tls
+  namespace: akhil-test
+spec:
+  secretName: msp-platform-tls-secret
+  issuerRef:
+    name: letsencrypt-prod
+    kind: ClusterIssuer
+  commonName: msp-platform.example.com
+  dnsNames:
+    - msp-platform.example.com
+    - gui-frontend.akhil-test.example.com
+    - gui-backend.akhil-test.example.com
+    - cp-service.akhil-test.example.com
+    - ots-service.akhil-test.example.com
+    - n8n.akhil-test.example.com

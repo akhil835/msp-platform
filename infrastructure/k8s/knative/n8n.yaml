@@ -1,0 +1,51 @@
+﻿apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: n8n
+  namespace: akhil-test
+  labels:
+    app: n8n
+    part-of: msp-platform
+spec:
+  template:
+    metadata:
+      annotations:
+        autoscaling.knative.dev/minScale: "0"
+        autoscaling.knative.dev/maxScale: "5"
+    spec:
+      containerConcurrency: 10
+      timeoutSeconds: 120
+      serviceAccountName: msp-workload-sa
+      containers:
+        - name: n8n
+          image: 258397330626.dkr.ecr.us-east-1.amazonaws.com/n8n:latest
+          ports:
+            - containerPort: 5678
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 5678
+            initialDelaySeconds: 30
+            periodSeconds: 15
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 5678
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            failureThreshold: 3
+          env:
+            - name: N8N_ENCRYPTION_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: msp-infisical-secrets
+                  key: n8n.encryption-key
+          resources:
+            requests:
+              cpu: "250m"
+              memory: "512Mi"
+            limits:
+              cpu: "1000m"
+              memory: "1024Mi"

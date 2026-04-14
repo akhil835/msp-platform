@@ -1,0 +1,26 @@
+﻿---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: akhil-test
+  labels:
+    name: akhil-test
+    part-of: msp-platform
+    # Fargate profile selector label
+    fargate-profile: akhil-test
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: default
+  labels:
+    name: default
+    fargate-profile: default
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: kube-system
+  labels:
+    name: kube-system
+    fargate-profile: kube-system
